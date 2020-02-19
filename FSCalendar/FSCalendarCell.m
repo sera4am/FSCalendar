@@ -61,6 +61,7 @@
     label = [[UILabel alloc] initWithFrame:CGRectZero];
     label.textAlignment = NSTextAlignmentCenter;
     label.textColor = [UIColor lightGrayColor];
+    label.numberOfLines = 0;
     [self.contentView addSubview:label];
     self.subtitleLabel = label;
     
@@ -103,19 +104,30 @@
     }
     
     if (_subtitle) {
-        CGFloat titleHeight = self.titleLabel.font.lineHeight;
-        CGFloat subtitleHeight = self.subtitleLabel.font.lineHeight;
+        CGFloat titleHeight = floor(self.contentView.fs_height*5.0/6.0);;
+        CGFloat maxSubtitleHeight = self.contentView.fs_height - titleHeight - self.preferredSubtitleOffset.y - self.preferredTitleOffset.y;
+        CGSize subTitleSize = [self.subtitleLabel sizeThatFits:CGSizeMake(self.contentView.fs_width, maxSubtitleHeight)];
+        CGFloat subtitleHeight = subTitleSize.height;
         
-        CGFloat height = titleHeight + subtitleHeight;
+        CGFloat subTitleY = (titleHeight / 2) + (self.titleLabel.font.pointSize / 2);
+        
+        _titleLabel.frame = CGRectMake(
+                                       self.preferredTitleOffset.x,
+                                       self.preferredTitleOffset.y,
+                                       self.contentView.fs_width,
+                                       titleHeight
+                                       );
+        /*
         _titleLabel.frame = CGRectMake(
                                        self.preferredTitleOffset.x,
                                        (self.contentView.fs_height*5.0/6.0-height)*0.5+self.preferredTitleOffset.y,
                                        self.contentView.fs_width,
                                        titleHeight
                                        );
+         */
         _subtitleLabel.frame = CGRectMake(
                                           self.preferredSubtitleOffset.x,
-                                          (_titleLabel.fs_bottom-self.preferredTitleOffset.y) - (_titleLabel.fs_height-_titleLabel.font.pointSize)+self.preferredSubtitleOffset.y,
+                                          (subTitleY + self.preferredSubtitleOffset.y),
                                           self.contentView.fs_width,
                                           subtitleHeight
                                           );
